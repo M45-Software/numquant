@@ -1,4 +1,4 @@
-# logquant
+# numquant
 
 `numfmt` is a small Go library for compressing large positive numbers into compact integer codes with predictable error.
 
