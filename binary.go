@@ -1,4 +1,4 @@
-package numfmt
+package numquant
 
 import (
 	"encoding/binary"

@@ -1,10 +1,10 @@
 # numquant
 
-`numfmt` is a small Go library for compressing large positive numbers into compact integer codes with predictable error.
+`numquant` is a small Go library for compressing large positive numbers into compact integer codes with predictable error.
 
 It is useful when raw `float64` is overkill and payload size matters.
 
-Quick guide: https://github.com/Distortions81/numfmt/blob/Main/docs/quantization_guide.md
+Quick guide: https://github.com/M45-Software/numquant/blob/Main/docs/quantization_guide.md
 
 ## Why this is useful
 
@@ -40,7 +40,7 @@ You can tune:
 ## Install
 
 ```bash
-go get numfmt
+go get github.com/M45-Software/numquant
 ```
 
 ## JavaScript
@@ -70,12 +70,12 @@ package main
 
 import (
 	"fmt"
-	numfmt "numfmt"
+	"github.com/M45-Software/numquant"
 )
 
 func main() {
-	code := numfmt.Encode(12_345_678.9)
-	approx := numfmt.Decode(code)
+	code := numquant.Encode(12_345_678.9)
+	approx := numquant.Decode(code)
 	fmt.Println(code, approx)
 }
 ```
@@ -84,18 +84,18 @@ func main() {
 
 ```go
 // requests/min in a service dashboard
-reqCodec := numfmt.MustNew(numfmt.Bits16, 2, 1000)
+reqCodec := numquant.MustNew(numquant.Bits16, 2, 1000)
 reqCode := reqCodec.Encode(1375)
 reqApprox := reqCodec.Decode(reqCode)
 
 // duration in seconds (for spans up to ~4 weeks)
-durCodec := numfmt.MustNewWithRange(numfmt.Bits16, 2, 1000, 1, 2_419_200)
+durCodec := numquant.MustNewWithRange(numquant.Bits16, 2, 1000, 1, 2_419_200)
 durCode := durCodec.Encode(30_780) // ~8h 33m
 
 durApprox := durCodec.Decode(durCode)
 
 // filesize in bytes (range-constrained to your domain)
-sizeCodec := numfmt.MustNewWithRange(numfmt.Bits16, 3, 1000, 1, 1_000_000_000_000)
+sizeCodec := numquant.MustNewWithRange(numquant.Bits16, 3, 1000, 1, 1_000_000_000_000)
 sizeCode := sizeCodec.Encode(136_920_000)
 sizeApprox := sizeCodec.Decode(sizeCode)
 
@@ -107,12 +107,12 @@ _, _, _ = reqApprox, durApprox, sizeApprox
 If you know the max value you care about, you can pick exponent bits automatically:
 
 ```go
-expBits, err := numfmt.RecommendedExpBits(numfmt.Bits16, 1000, 100_000_000)
+expBits, err := numquant.RecommendedExpBits(numquant.Bits16, 1000, 100_000_000)
 if err != nil {
 	panic(err)
 }
 
-codec := numfmt.MustNew(numfmt.Bits16, expBits, 1000)
+codec := numquant.MustNew(numquant.Bits16, expBits, 1000)
 _ = codec
 ```
 
@@ -129,15 +129,15 @@ Header includes:
 - value count
 
 ```go
-codec := numfmt.MustNewWithRange(numfmt.Bits16, 2, 1000, 1, 2_419_200)
+codec := numquant.MustNewWithRange(numquant.Bits16, 2, 1000, 1, 2_419_200)
 values := []float64{60, 3600, 30_780}
 
-blob, err := numfmt.EncodeValuesBinary(codec, values)
+blob, err := numquant.EncodeValuesBinary(codec, values)
 if err != nil {
 	panic(err)
 }
 
-restoredCodec, restoredValues, err := numfmt.DecodeValuesBinary(blob)
+restoredCodec, restoredValues, err := numquant.DecodeValuesBinary(blob)
 if err != nil {
 	panic(err)
 }
