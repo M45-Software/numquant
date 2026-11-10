@@ -39,6 +39,8 @@ You can tune:
 
 ## Install
 
+Requires Go 1.27.4 or later.
+
 ```bash
 go get github.com/M45-Software/numquant
 ```
